@@ -20,38 +20,6 @@ The Employee Bonus Service is a Spring Boot application designed to manage emplo
 - **H2 Database** (for in-memory database management during development)
 - **Maven** (for project build and dependency management)
 
-## Project Structure
-
-src
-├── main
-│   ├── java
-│   │   └── com
-│   │       └── assignment
-│   │           └── employeebonus
-│   │               ├── controller
-│   │               │   └── EmployeeController.java
-│   │               ├── exceptions
-│   │               │   └── EmployeeException.java
-│   │               ├── model
-│   │               │   ├── Department.java
-│   │               │   └── Employee.java
-│   │               ├── repository
-│   │               │   ├── DepartmentRepository.java
-│   │               │   └── EmployeeRepository.java
-│   │               └── service
-│   │                   ├── EmployeeService.java
-│   │                   └── EmployeeServiceImpl.java
-│   └── resources
-│       ├── application.properties
-│       └── data.sql
-└── test
-    └── java
-        └── com
-            └── assignment
-                └── employeebonus
-                    └── EmployeeBonusServiceApplicationTests.java
-
-
 
 ## Key Components
 
