@@ -8,7 +8,7 @@ import com.assignment.employeebonus.exceptions.EmployeeException;
 import com.assignment.employeebonus.model.Department;
 
 public interface EmployeeService {
-	void saveEmployees(Map<String, List<Map<String, Object>>> payload) throws EmployeeException;
+	Map<String, Object> saveEmployees(Map<String, List<Map<String, Object>>> payload) throws EmployeeException;
 
 	Map<String, Object> getEligibleEmployees(String dateString) throws EmployeeException;
 

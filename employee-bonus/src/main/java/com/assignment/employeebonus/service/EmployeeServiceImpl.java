@@ -12,11 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,29 +26,50 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public void saveEmployees(Map<String, List<Map<String, Object>>> payload) throws EmployeeException {
+    public Map<String, Object> saveEmployees(Map<String, List<Map<String, Object>>> payload) throws EmployeeException {
         List<Map<String, Object>> employeeData = payload.get("employees");
 
-        List<Employee> employees = employeeData.stream().map(data -> {
-            Employee employee = new Employee();
+        List<String> alreadyExistingEmployees = new ArrayList<>();
+        List<String> newEmployees = new ArrayList<>();
 
-            employee.setEmpName((String) data.get("empName"));
-            employee.setAmount((Integer) data.get("amount"));
-            employee.setCurrency((String) data.get("currency"));
-
+        for (Map<String, Object> data : employeeData) {
+            String empName = (String) data.get("empName");
             LocalDate joiningDate = parseDate((String) data.get("joiningDate"));
-            LocalDate exitDate = parseDate((String) data.get("exitDate"));
-            employee.setJoiningDate(joiningDate);
-            employee.setExitDate(exitDate);
-
             String departmentName = (String) data.get("department");
-            Department department = getOrCreateDepartment(departmentName);
-            employee.setDepartment(department);
 
-            return employee;
-        }).collect(Collectors.toList());
+            // Check if an employee with the same empName, joiningDate, and department already exists
+            Employee existingEmployee = employeeRepository.findByEmpNameAndJoiningDateAndDepartment_Name(empName, joiningDate, departmentName);
 
-        employeeRepository.saveAll(employees);
+            if (existingEmployee == null) {
+                // Create new Employee entity
+                Employee employee = new Employee();
+                employee.setEmpName(empName);
+                employee.setAmount((Integer) data.get("amount"));
+                employee.setCurrency((String) data.get("currency"));
+                employee.setJoiningDate(joiningDate);
+                employee.setExitDate(parseDate((String) data.get("exitDate")));
+                employee.setDepartment(getOrCreateDepartment(departmentName));
+
+                employeeRepository.save(employee);
+                newEmployees.add(empName);
+            } else {
+                // Log or collect information about already existing employees
+                alreadyExistingEmployees.add(empName + " (Joining Date: " + joiningDate + ", Department: " + departmentName + ")");
+            }
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Employees saved successfully.");
+
+        if (!newEmployees.isEmpty()) {
+            response.put("newEmployees", newEmployees);
+        }
+
+        if (!alreadyExistingEmployees.isEmpty()) {
+            response.put("alreadyExistingEmployees", alreadyExistingEmployees);
+        }
+
+        return response;
     }
 
     @Override
@@ -96,7 +113,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new EmployeeException("Invalid date format. Please use 'MMM-dd-yyyy' format for dates.");
         }
     }
-
 
     @Override
     @Transactional
@@ -142,3 +158,4 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 }
+

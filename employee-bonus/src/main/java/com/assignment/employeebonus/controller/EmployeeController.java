@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -16,16 +17,17 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
-
+    
     @PostMapping
-    public ResponseEntity<String> saveEmployees(@RequestBody Map<String, List<Map<String, Object>>> payload) {
+    public ResponseEntity<Map<String, Object>> saveEmployees(@RequestBody Map<String, List<Map<String, Object>>> payload) {
         try {
-            employeeService.saveEmployees(payload);
-            return ResponseEntity.ok("Employees saved successfully.");
+            Map<String, Object> response = employeeService.saveEmployees(payload);
+            return ResponseEntity.ok(response);
         } catch (EmployeeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(Collections.singletonMap("errorMessage", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while saving employees: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(Collections.singletonMap("errorMessage", "An error occurred while saving employees: " + e.getMessage()));
         }
     }
 
