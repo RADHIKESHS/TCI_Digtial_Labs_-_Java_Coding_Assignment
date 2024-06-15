@@ -34,30 +34,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public void saveEmployees(List<Employee> employees) {
         for (Employee employee : employees) {
-            Department department = departmentRepository.findByName(employee.getDepartment().getName());
-            if (department == null) {
-                department = new Department();
-                department.setName(employee.getDepartment().getName());
-                department = departmentRepository.save(department);
-            }
-            employee.setDepartment(department);
-
-            // Save the employee
             employeeRepository.save(employee);
         }
     }
 
     @Override
-    public Map<String, List<Employee>> getEligibleEmployees(String date) {
-        LocalDate bonusDate;
-        try {
-            bonusDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("MMM-dd-yyyy"));
-        } catch (DateTimeParseException e) {
-            throw new InvalidDateFormatException("Invalid date format. Please use 'MMM-dd-yyyy' format.");
-        }
+    public Map<String, List<Employee>> getEligibleEmployees(LocalDate date) {
+        LocalDate bonusDate=date;
 
         List<Employee> allEmployees = employeeRepository.findAll();
-
         List<Employee> eligibleEmployees = allEmployees.stream()
                 .filter(emp -> (emp.getJoiningDate().isBefore(bonusDate) || emp.getJoiningDate().isEqual(bonusDate)) &&
                                (emp.getExitDate() == null || emp.getExitDate().isAfter(bonusDate) || emp.getExitDate().isEqual(bonusDate)))
@@ -71,6 +56,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         return eligibleEmployees.stream()
                 .collect(Collectors.groupingBy(Employee::getCurrency));
     }
+    
+    
 
 
 }

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 
 @Entity
 @Data
@@ -18,9 +20,12 @@ public class Employee {
     private Long id;
 
     private String empName;
-    private double amount;
+    private Integer amount;
     private String currency;
+    @JsonFormat(pattern = "MMM-dd-yyyy")
     private LocalDate joiningDate;
+
+    @JsonFormat(pattern = "MMM-dd-yyyy")
     private LocalDate exitDate;
 
     @ManyToOne
@@ -28,4 +33,3 @@ public class Employee {
     private Department department;
 
 }
-

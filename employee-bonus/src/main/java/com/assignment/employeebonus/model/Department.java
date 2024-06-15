@@ -16,8 +16,17 @@ public class Department {
     private Long id;
 
     private String name;
+    
+    
 
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
+    public Department(String name) {
+		super();
+		this.name = name;
+	}
+
+
+
+	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     private List<Employee> employees;
 
 }
