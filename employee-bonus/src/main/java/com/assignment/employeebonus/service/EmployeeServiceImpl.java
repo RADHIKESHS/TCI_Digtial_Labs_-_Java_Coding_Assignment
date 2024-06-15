@@ -26,8 +26,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    @Autowired
-    private DepartmentRepository departmentRepository;
 
 
     @Override
